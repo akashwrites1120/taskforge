@@ -77,7 +77,7 @@ func TestQueueDB(t *testing.T) {
 		assert.Equal(t, 5, job.MaxAttempts)
 
 		// Dequeue
-		jobs, err := q.Dequeue(ctx, "worker-1", 10, 10*time.Second)
+		jobs, err := q.Dequeue(ctx, "worker-1", 10, 10*time.Second, nil)
 		require.NoError(t, err)
 		require.Len(t, jobs, 1)
 		assert.Equal(t, job.ID, jobs[0].ID)

@@ -135,7 +135,7 @@ func (q *Queue) Enqueue(ctx context.Context, params EnqueueParams) (*Job, bool, 
 }
 
 // Dequeue locks and claims a batch of ready jobs for a worker.
-func (q *Queue) Dequeue(ctx context.Context, workerID string, batchSize int, visibilityTimeout time.Duration) ([]*Job, error) {
+func (q *Queue) Dequeue(ctx context.Context, workerID string, batchSize int, visibilityTimeout time.Duration, excludeTypes []string) ([]*Job, error) {
 	if batchSize <= 0 {
 		return nil, nil
 	}
@@ -147,6 +147,7 @@ func (q *Queue) Dequeue(ctx context.Context, workerID string, batchSize int, vis
 			FROM jobs 
 			WHERE status IN ('pending', 'retrying') 
 			  AND run_at <= now() 
+			  AND ($4::text[] IS NULL OR NOT (job_type = ANY($4)))
 			ORDER BY priority DESC, run_at ASC 
 			LIMIT $1 
 			FOR UPDATE SKIP LOCKED
@@ -165,7 +166,12 @@ func (q *Queue) Dequeue(ctx context.Context, workerID string, batchSize int, vis
 	// Convert duration to seconds as integer/float for PG interval compatibility
 	timeoutSeconds := visibilityTimeout.Seconds()
 
-	rows, err := q.store.Pool.Query(ctx, query, batchSize, workerID, timeoutSeconds)
+	var pgExcludeTypes []string
+	if len(excludeTypes) > 0 {
+		pgExcludeTypes = excludeTypes
+	}
+
+	rows, err := q.store.Pool.Query(ctx, query, batchSize, workerID, timeoutSeconds, pgExcludeTypes)
 	if err != nil {
 		return nil, fmt.Errorf("dequeue query failed: %w", err)
 	}
