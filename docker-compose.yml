@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: taskforge-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: taskforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskforge-backend
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/taskforge?sslmode=disable
+      HTTP_PORT: "8080"
+      WORKER_CONCURRENCY: "10"
+      REAPER_INTERVAL: "5s"
+      VISIBILITY_TIMEOUT: "30s"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["server"]
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskforge-worker
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/taskforge?sslmode=disable
+      WORKER_CONCURRENCY: "10"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["worker"]
+
+  reaper:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskforge-reaper
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/taskforge?sslmode=disable
+      REAPER_INTERVAL: "5s"
+      VISIBILITY_TIMEOUT: "30s"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["reaper"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: taskforge-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+    depends_on:
+      - backend
+
+  # Optional: Prometheus + Grafana for metrics visualization
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: taskforge-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: taskforge-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:

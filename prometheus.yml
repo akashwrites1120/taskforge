@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'taskforge'
+    static_configs:
+      - targets: ['backend:8080']  # Assuming the backend service is named 'backend' in docker-compose
+    metrics_path: /metrics
+    scheme: http
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:9187']  # Requires postgres exporter, but we don't have it by default. We'll skip for now.
+    # We can add a postgres exporter if needed, but for now we'll just scrape the backend.
+
+  # Optionally, we can also scrape the frontend if it exposes metrics (it doesn't by default).
