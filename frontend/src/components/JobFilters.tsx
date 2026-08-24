@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Search, X, CalendarRange } from 'lucide-react';
 import type { JobStatus } from '../types';
 
 const STATUSES: JobStatus[] = ['pending', 'processing', 'retrying', 'succeeded', 'dead_letter'];
@@ -70,56 +70,44 @@ export function JobFilters({ filters, onChange }: Props) {
   const hasFilters =
     filters.status.length > 0 || filters.job_type.length > 0 || filters.search || filters.start_time || filters.end_time;
 
+  const chipCls = (active: boolean) =>
+    `px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 ${
+      active
+        ? 'bg-emerald-500 border-emerald-400 text-zinc-950'
+        : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+    }`;
+
   return (
     <div className="space-y-3">
       {/* Search bar */}
-      <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+      <div className="relative group">
+        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors duration-200" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by ID or idempotency key…"
-          className="w-full pl-9 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+          className="w-full pl-10 pr-4 py-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/15 transition-all duration-200"
         />
       </div>
 
       {/* Chips row */}
       <div className="flex flex-wrap gap-2 items-center">
-        <span className="text-xs text-slate-500 flex items-center gap-1">
-          <SlidersHorizontal size={13} /> Status:
-        </span>
         {STATUSES.map((s) => (
-          <button
-            key={s}
-            onClick={() => toggleStatus(s)}
-            className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
-              filters.status.includes(s)
-                ? 'bg-indigo-600 border-indigo-500 text-white'
-                : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500'
-            }`}
-          >
+          <button key={s} onClick={() => toggleStatus(s)} className={chipCls(filters.status.includes(s))}>
             {s.replace('_', ' ')}
           </button>
         ))}
-        <span className="text-xs text-slate-500 ml-2">Type:</span>
+        <span className="w-px h-4 bg-zinc-800 mx-1" />
         {JOB_TYPES.map((t) => (
-          <button
-            key={t}
-            onClick={() => toggleType(t)}
-            className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
-              filters.job_type.includes(t)
-                ? 'bg-violet-600 border-violet-500 text-white'
-                : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500'
-            }`}
-          >
+          <button key={t} onClick={() => toggleType(t)} className={chipCls(filters.job_type.includes(t))}>
             {t}
           </button>
         ))}
         {hasFilters && (
           <button
             onClick={clear}
-            className="ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            className="ml-auto flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-200 transition-colors duration-200 animate-fade-in"
           >
             <X size={13} /> Clear
           </button>
@@ -127,25 +115,26 @@ export function JobFilters({ filters, onChange }: Props) {
       </div>
 
       {/* Date range */}
-      <div className="flex flex-wrap gap-3">
-        <div>
-          <label className="text-xs text-slate-500 block mb-1">From</label>
-          <input
-            type="datetime-local"
-            value={filters.start_time}
-            onChange={(e) => onChange({ ...filters, start_time: e.target.value })}
-            className="bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-          />
-        </div>
-        <div>
-          <label className="text-xs text-slate-500 block mb-1">To</label>
-          <input
-            type="datetime-local"
-            value={filters.end_time}
-            onChange={(e) => onChange({ ...filters, end_time: e.target.value })}
-            className="bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-          />
-        </div>
+      <div className="flex flex-wrap items-end gap-3">
+        <span className="flex items-center gap-1.5 text-xs text-zinc-600 pb-2">
+          <CalendarRange size={13} /> Range
+        </span>
+        {(
+          [
+            ['From', 'start_time'],
+            ['To', 'end_time'],
+          ] as const
+        ).map(([label, field]) => (
+          <div key={field}>
+            <label className="text-[11px] uppercase tracking-wide text-zinc-600 block mb-1">{label}</label>
+            <input
+              type="datetime-local"
+              value={filters[field]}
+              onChange={(e) => onChange({ ...filters, [field]: e.target.value })}
+              className="bg-zinc-900/60 border border-zinc-800 rounded-lg text-xs text-zinc-300 px-3 py-2 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/15 transition-all duration-200 [color-scheme:dark]"
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

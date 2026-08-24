@@ -3,7 +3,7 @@ import { useJobs } from '../hooks/useJobs';
 import { StatusPill } from './StatusPill';
 import { Pagination } from './Pagination';
 import { JobFilters, readFiltersFromParams, writeFiltersToParams, type Filters } from './JobFilters';
-import { RefreshCw, AlertTriangle } from 'lucide-react';
+import { RefreshCw, TriangleAlert, Inbox, ChevronRight } from 'lucide-react';
 
 function fmt(iso: string | null) {
   if (!iso) return '—';
@@ -32,65 +32,73 @@ export function JobList() {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <JobFilters filters={filters} onChange={setFilters} />
 
-      <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
+      <div className="card overflow-hidden animate-fade-up" style={{ animationDelay: '80ms' }}>
         {/* Table header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
-          <span className="text-sm font-medium text-slate-300">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800/80">
+          <span className="text-sm font-medium text-zinc-300 tabular-nums">
             {data ? `${data.total.toLocaleString()} jobs` : 'Jobs'}
           </span>
           {isFetching && (
-            <RefreshCw size={14} className="text-slate-500 animate-spin" />
+            <RefreshCw size={14} className="text-emerald-400/70 animate-spin" />
           )}
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-40 text-slate-500">
-            <RefreshCw size={18} className="animate-spin mr-2" /> Loading…
+          <div className="flex justify-center items-center h-44 text-zinc-500 gap-2.5 text-sm">
+            <RefreshCw size={16} className="animate-spin" /> Loading…
           </div>
         ) : isError ? (
-          <div className="flex justify-center items-center h-40 text-red-400 gap-2">
-            <AlertTriangle size={18} /> Failed to load jobs
+          <div className="flex justify-center items-center h-44 text-red-400 gap-2.5 text-sm animate-fade-in">
+            <TriangleAlert size={16} /> Failed to load jobs
           </div>
         ) : !data || data.jobs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-slate-500 gap-2">
-            <span className="text-4xl">📭</span>
+          <div className="flex flex-col items-center justify-center h-44 text-zinc-600 gap-3 animate-fade-in">
+            <Inbox size={28} strokeWidth={1.5} />
             <span className="text-sm">No jobs match these filters</span>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs font-medium text-slate-500 border-b border-slate-800">
-                  <th className="px-4 py-2.5">ID</th>
-                  <th className="px-4 py-2.5">Type</th>
-                  <th className="px-4 py-2.5">Status</th>
-                  <th className="px-4 py-2.5">Attempts</th>
-                  <th className="px-4 py-2.5">Run At</th>
-                  <th className="px-4 py-2.5">Updated</th>
+                <tr className="text-left text-[11px] uppercase tracking-wider font-medium text-zinc-500 border-b border-zinc-800/80">
+                  <th className="px-4 py-3">ID</th>
+                  <th className="px-4 py-3">Type</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Attempts</th>
+                  <th className="px-4 py-3">Run At</th>
+                  <th className="px-4 py-3">Updated</th>
+                  <th className="w-8" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
-                {data.jobs.map((job) => (
+              <tbody className="divide-y divide-zinc-800/60">
+                {data.jobs.map((job, i) => (
                   <tr
-                    key={job.ID}
-                    onClick={() => navigate(`/jobs/${job.ID}`)}
-                    className="cursor-pointer hover:bg-slate-800/60 transition-colors"
+                    key={job.id}
+                    onClick={() => navigate(`/jobs/${job.id}`)}
+                    className="group cursor-pointer hover:bg-zinc-800/40 transition-colors duration-150 animate-fade-in"
+                    style={{ animationDelay: `${Math.min(i * 25, 300)}ms` }}
                   >
-                    <td className="px-4 py-3 font-mono text-xs text-slate-400">
-                      {job.ID.slice(0, 8)}…
+                    <td className="px-4 py-3.5 font-mono text-xs text-zinc-400 group-hover:text-emerald-300 transition-colors duration-150">
+                      {job.id.slice(0, 8)}…
                     </td>
-                    <td className="px-4 py-3 text-slate-200 font-medium">{job.JobType}</td>
-                    <td className="px-4 py-3">
-                      <StatusPill status={job.Status} />
+                    <td className="px-4 py-3.5 text-zinc-200 font-medium">{job.job_type}</td>
+                    <td className="px-4 py-3.5">
+                      <StatusPill status={job.status} />
                     </td>
-                    <td className="px-4 py-3 font-mono text-slate-400">
-                      {job.AttemptCount}/{job.MaxAttempts}
+                    <td className="px-4 py-3.5 font-mono text-xs text-zinc-400 tabular-nums">
+                      {job.attempt_count}/{job.max_attempts}
                     </td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{fmt(job.RunAt)}</td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{fmt(job.UpdatedAt)}</td>
+                    <td className="px-4 py-3.5 text-zinc-500 text-xs">{fmt(job.run_at)}</td>
+                    <td className="px-4 py-3.5 text-zinc-500 text-xs">{fmt(job.updated_at)}</td>
+                    <td className="px-2 py-3.5">
+                      <ChevronRight
+                        size={15}
+                        className="text-zinc-700 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all duration-200"
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

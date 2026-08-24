@@ -1,12 +1,12 @@
 import clsx from 'clsx';
 import type { JobStatus } from '../types';
 
-const CONFIG: Record<JobStatus, { label: string; cls: string }> = {
-  pending:     { label: 'Pending',     cls: 'bg-slate-500/20 text-slate-300 border-slate-500/40' },
-  processing:  { label: 'Processing',  cls: 'bg-blue-500/20  text-blue-300  border-blue-500/40'  },
-  retrying:    { label: 'Retrying',    cls: 'bg-amber-500/20 text-amber-300 border-amber-500/40' },
-  succeeded:   { label: 'Succeeded',   cls: 'bg-green-500/20 text-green-300 border-green-500/40' },
-  dead_letter: { label: 'Dead Letter', cls: 'bg-red-500/20   text-red-300   border-red-500/40'   },
+const CONFIG: Record<JobStatus, { label: string; dot: string; cls: string }> = {
+  pending:     { label: 'Pending',     dot: 'bg-zinc-400',   cls: 'text-zinc-300 border-zinc-700/60 bg-zinc-500/10' },
+  processing:  { label: 'Processing',  dot: 'bg-sky-400',    cls: 'text-sky-300 border-sky-500/30 bg-sky-500/10' },
+  retrying:    { label: 'Retrying',    dot: 'bg-amber-400',  cls: 'text-amber-300 border-amber-500/30 bg-amber-500/10' },
+  succeeded:   { label: 'Succeeded',   dot: 'bg-emerald-400', cls: 'text-emerald-300 border-emerald-500/30 bg-emerald-500/10' },
+  dead_letter: { label: 'Dead Letter', dot: 'bg-red-400',    cls: 'text-red-300 border-red-500/30 bg-red-500/10' },
 };
 
 interface Props {
@@ -15,15 +15,20 @@ interface Props {
 }
 
 export function StatusPill({ status, className }: Props) {
-  const cfg = CONFIG[status] ?? { label: status, cls: 'bg-slate-600/20 text-slate-400 border-slate-600/40' };
+  const cfg = CONFIG[status] ?? { label: status, dot: 'bg-zinc-500', cls: 'text-zinc-400 border-zinc-600/40 bg-zinc-600/10' };
+  const isLive = status === 'processing' || status === 'retrying';
   return (
     <span
       className={clsx(
-        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border',
+        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border',
         cfg.cls,
-        className
+        className,
       )}
     >
+      <span className="relative flex w-1.5 h-1.5">
+        {isLive && <span className={clsx('absolute inline-flex w-full h-full rounded-full animate-glow-pulse', cfg.dot)} />}
+        <span className={clsx('relative inline-flex w-1.5 h-1.5 rounded-full', cfg.dot)} />
+      </span>
       {cfg.label}
     </span>
   );

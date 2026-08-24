@@ -5,7 +5,7 @@ import { useBulkAction } from '../hooks/useBulkAction';
 
 import { Pagination } from './Pagination';
 import { ConfirmModal } from './ConfirmModal';
-import { RefreshCw, AlertTriangle, CheckSquare, Square, Trash2 } from 'lucide-react';
+import { RefreshCw, TriangleAlert, CheckCircle2, CheckSquare, Square, Trash2, RotateCcw } from 'lucide-react';
 
 function fmt(iso: string | null) {
   if (!iso) return '—';
@@ -35,7 +35,7 @@ export function DeadLetterTable() {
     if (selected.size === jobs.length) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(jobs.map((j) => j.ID)));
+      setSelected(new Set(jobs.map((j) => j.id)));
     }
   }
 
@@ -58,40 +58,40 @@ export function DeadLetterTable() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-500">
-        <RefreshCw size={18} className="animate-spin mr-2" /> Loading…
+      <div className="flex items-center justify-center h-64 text-zinc-500 gap-2.5 text-sm">
+        <RefreshCw size={16} className="animate-spin" /> Loading…
       </div>
     );
   }
   if (isError) {
     return (
-      <div className="flex items-center justify-center h-64 text-red-400 gap-2">
-        <AlertTriangle size={18} /> Failed to load dead-letter jobs
+      <div className="flex items-center justify-center h-64 text-red-400 gap-2.5 text-sm animate-fade-in">
+        <TriangleAlert size={16} /> Failed to load dead-letter jobs
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Bulk action bar */}
       {selected.size > 0 && (
-        <div className="flex items-center gap-4 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm">
-          <span className="text-slate-300 font-medium">{selected.size} selected</span>
+        <div className="flex flex-wrap items-center gap-3 bg-emerald-500/10 border border-emerald-500/25 rounded-xl px-4 py-3 text-sm animate-scale-in">
+          <span className="text-emerald-300 font-medium tabular-nums">{selected.size} selected</span>
           <button
             onClick={() => setConfirmAction('requeue')}
             disabled={isBusy}
-            className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium disabled:opacity-50 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 rounded-lg text-xs font-medium disabled:opacity-50 transition-all duration-200"
           >
-            <RefreshCw size={13} /> Requeue {selected.size}
+            <RotateCcw size={13} /> Requeue {selected.size}
           </button>
           <button
             onClick={() => setConfirmAction('discard')}
             disabled={isBusy}
-            className="flex items-center gap-2 px-3 py-1.5 bg-red-900/50 hover:bg-red-800/60 text-red-400 border border-red-800/60 rounded-lg text-xs font-medium disabled:opacity-50 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 rounded-lg text-xs font-medium disabled:opacity-50 transition-all duration-200"
           >
             <Trash2 size={13} /> Discard {selected.size}
           </button>
-          <span className="ml-auto text-xs text-slate-500">
+          <span className="ml-auto text-xs text-zinc-500 tabular-nums">
             {isFetching && <RefreshCw size={12} className="inline animate-spin mr-1" />}
             {data?.total ?? 0} total dead-lettered
           </span>
@@ -99,64 +99,77 @@ export function DeadLetterTable() {
       )}
 
       {jobs.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-700 rounded-xl p-16 text-center space-y-3">
-          <div className="text-5xl">✅</div>
-          <p className="text-slate-300 font-medium">No dead-lettered jobs</p>
-          <p className="text-sm text-slate-500">Queue is healthy — nothing needs operator attention.</p>
+        <div className="card p-16 text-center space-y-3 animate-fade-up">
+          <div className="flex justify-center">
+            <CheckCircle2 size={40} strokeWidth={1.25} className="text-emerald-400" />
+          </div>
+          <p className="text-zinc-200 font-medium">No dead-lettered jobs</p>
+          <p className="text-sm text-zinc-500">Queue is healthy — nothing needs operator attention.</p>
         </div>
       ) : (
-        <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
+        <div className="card overflow-hidden animate-fade-up" style={{ animationDelay: '80ms' }}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs font-medium text-slate-500 border-b border-slate-800">
-                  <th className="px-4 py-2.5 w-10">
-                    <button onClick={toggleAll} className="text-slate-500 hover:text-slate-300 transition-colors">
-                      {selected.size === jobs.length ? (
-                        <CheckSquare size={16} />
-                      ) : (
-                        <Square size={16} />
-                      )}
+                <tr className="text-left text-[11px] uppercase tracking-wider font-medium text-zinc-500 border-b border-zinc-800/80">
+                  <th className="px-4 py-3 w-10">
+                    <button
+                      onClick={toggleAll}
+                      aria-label="Select all"
+                      className="text-zinc-500 hover:text-zinc-200 transition-colors duration-150"
+                    >
+                      {selected.size === jobs.length ? <CheckSquare size={16} /> : <Square size={16} />}
                     </button>
                   </th>
-                  <th className="px-4 py-2.5">ID</th>
-                  <th className="px-4 py-2.5">Type</th>
-                  <th className="px-4 py-2.5">Attempts</th>
-                  <th className="px-4 py-2.5">Updated</th>
-                  <th className="px-4 py-2.5">Last Error</th>
+                  <th className="px-4 py-3">ID</th>
+                  <th className="px-4 py-3">Type</th>
+                  <th className="px-4 py-3">Attempts</th>
+                  <th className="px-4 py-3">Updated</th>
+                  <th className="px-4 py-3">Last Error</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
-                {jobs.map((job) => (
+              <tbody className="divide-y divide-zinc-800/60">
+                {jobs.map((job, i) => (
                   <tr
-                    key={job.ID}
-                    className={`transition-colors ${selected.has(job.ID) ? 'bg-slate-800/40' : 'hover:bg-slate-800/30'}`}
+                    key={job.id}
+                    className={`group cursor-pointer transition-colors duration-150 animate-fade-in ${
+                      selected.has(job.id)
+                        ? 'bg-emerald-500/5'
+                        : 'hover:bg-zinc-800/40'
+                    }`}
+                    style={{ animationDelay: `${Math.min(i * 25, 300)}ms` }}
                   >
                     <td
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={(e) => { e.stopPropagation(); toggle(job.ID); }}
+                      className="px-4 py-3.5"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggle(job.id);
+                      }}
                     >
-                      {selected.has(job.ID) ? (
-                        <CheckSquare size={16} className="text-indigo-400" />
+                      {selected.has(job.id) ? (
+                        <CheckSquare size={16} className="text-emerald-400" />
                       ) : (
-                        <Square size={16} className="text-slate-600" />
+                        <Square size={16} className="text-zinc-600 group-hover:text-zinc-400 transition-colors duration-150" />
                       )}
                     </td>
                     <td
-                      className="px-4 py-3 font-mono text-xs text-slate-400 cursor-pointer"
-                      onClick={() => navigate(`/jobs/${job.ID}`)}
+                      className="px-4 py-3.5 font-mono text-xs text-zinc-400 group-hover:text-emerald-300 transition-colors duration-150"
+                      onClick={() => navigate(`/jobs/${job.id}`)}
                     >
-                      {job.ID.slice(0, 8)}…
+                      {job.id.slice(0, 8)}…
                     </td>
-                    <td className="px-4 py-3 text-slate-200 font-medium cursor-pointer" onClick={() => navigate(`/jobs/${job.ID}`)}>
-                      {job.JobType}
+                    <td
+                      className="px-4 py-3.5 text-zinc-200 font-medium"
+                      onClick={() => navigate(`/jobs/${job.id}`)}
+                    >
+                      {job.job_type}
                     </td>
-                    <td className="px-4 py-3 font-mono text-slate-400">
-                      {job.AttemptCount}/{job.MaxAttempts}
+                    <td className="px-4 py-3.5 font-mono text-xs text-zinc-400 tabular-nums">
+                      {job.attempt_count}/{job.max_attempts}
                     </td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">{fmt(job.UpdatedAt)}</td>
-                    <td className="px-4 py-3 text-xs text-red-400/80 max-w-xs truncate">
-                      {job.Result ?? '—'}
+                    <td className="px-4 py-3.5 text-zinc-500 text-xs">{fmt(job.updated_at)}</td>
+                    <td className="px-4 py-3.5 text-xs text-red-300/80 max-w-xs truncate">
+                      {job.result != null ? String(job.result) : '—'}
                     </td>
                   </tr>
                 ))}
@@ -169,7 +182,10 @@ export function DeadLetterTable() {
               total={data.total}
               limit={LIMIT}
               offset={offset}
-              onChange={(o) => { setOffset(o); setSelected(new Set()); }}
+              onChange={(o) => {
+                setOffset(o);
+                setSelected(new Set());
+              }}
             />
           )}
         </div>
@@ -178,7 +194,9 @@ export function DeadLetterTable() {
       {/* Confirm bulk modals */}
       {confirmAction && (
         <ConfirmModal
-          title={confirmAction === 'requeue' ? `Requeue ${selected.size} Jobs` : `Discard ${selected.size} Jobs`}
+          title={
+            confirmAction === 'requeue' ? `Requeue ${selected.size} Jobs` : `Discard ${selected.size} Jobs`
+          }
           message={
             confirmAction === 'requeue'
               ? `Re-queue ${selected.size} dead-lettered jobs back to pending with attempt count reset to 0?`
