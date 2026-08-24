@@ -1,1 +1,6 @@
 status.md
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
