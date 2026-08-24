@@ -134,7 +134,7 @@ Configure the backend via environment variables:
 | `DEDUPE_WINDOW` | Idempotency key dedupe window | `24h` |
 
 Frontend configuration:
-- `VITE_API_BASE_URL`: Base URL for API requests (defaults to `http://localhost:8080` in dev)
+- `API_BASE_URL`: Base URL for API requests (defaults to `http://localhost:8080` in dev)
 
 ## API Endpoints
 
