@@ -83,7 +83,7 @@ migrate-new:
 test: test-backend test-frontend
 
 test-backend:
-	cd backend && go test -v -race ./...
+	cd backend && go test -v -race -p 1 ./...
 
 test-frontend:
 	cd frontend && npm run test

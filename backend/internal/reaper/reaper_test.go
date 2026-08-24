@@ -37,7 +37,18 @@ func TestReaperDB(t *testing.T) {
 	q := queue.NewQueue(s, 24*time.Hour)
 	r := NewReaper(s, 100*time.Millisecond)
 
+	// resetTables wipes all queue state so subtests are isolated from each other.
+	resetTables := func() {
+		t.Helper()
+		_, err := s.Pool.Exec(ctx, "DELETE FROM job_attempts")
+		require.NoError(t, err)
+		_, err = s.Pool.Exec(ctx, "DELETE FROM jobs")
+		require.NoError(t, err)
+	}
+
 	t.Run("Reclaim expired job to retrying status", func(t *testing.T) {
+		resetTables()
+
 		// Enqueue job
 		job, _, err := q.Enqueue(ctx, queue.EnqueueParams{
 			JobType:     "send_alert",
@@ -78,6 +89,8 @@ func TestReaperDB(t *testing.T) {
 	})
 
 	t.Run("Reclaim expired job to dead_letter status if attempts exhausted", func(t *testing.T) {
+		resetTables()
+
 		// Enqueue job with max_attempts = 1
 		job, _, err := q.Enqueue(ctx, queue.EnqueueParams{
 			JobType:     "alert_exhaust",
@@ -111,6 +124,8 @@ func TestReaperDB(t *testing.T) {
 	})
 
 	t.Run("Advisory lock blocks concurrent reaping", func(t *testing.T) {
+		resetTables()
+
 		// Enqueue job
 		job, _, err := q.Enqueue(ctx, queue.EnqueueParams{
 			JobType:     "concurrency_check",
@@ -159,6 +174,8 @@ func TestReaperDB(t *testing.T) {
 	})
 
 	t.Run("Worker crash simulation and recovery", func(t *testing.T) {
+		resetTables()
+
 		// Enqueue a job
 		job, _, err := q.Enqueue(ctx, queue.EnqueueParams{
 			JobType: "crash_job",

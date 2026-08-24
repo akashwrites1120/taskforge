@@ -174,7 +174,7 @@ func TestListJobs_FilterByStatus(t *testing.T) {
 	jobs := resp["jobs"].([]any)
 	for _, j := range jobs {
 		jmap := j.(map[string]any)
-		assert.Equal(t, "pending", jmap["Status"])
+		assert.Equal(t, "pending", jmap["status"])
 	}
 }
 
