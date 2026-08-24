@@ -1,6 +1,10 @@
 # TaskForge Makefile
 # Provides common development and build commands
 
+# Load .env.local (DATABASE_URL, PORT, ...) if present.
+# Override per-invocation with: make migrate-up DATABASE_URL=<url>
+sinclude .env.local
+
 .PHONY: help dev test build migrate-up migrate-down docker-up docker-down lint
 
 # Default target
@@ -66,14 +70,15 @@ run-frontend:
 	cd frontend && npm run dev
 
 # Database migrations
+# DATABASE_URL comes from .env.local (see sinclude above); CLI override wins.
 MIGRATE_CMD = migrate -path ./migrations -database "$$DATABASE_URL"
 DATABASE_URL ?= postgres://postgres:postgres@localhost:5432/taskforge?sslmode=disable
 
 migrate-up:
-	@export DATABASE_URL="$(DATABASE_URL)" && $(MIGRATE_CMD) up
+	@DATABASE_URL="$(DATABASE_URL)" $(MIGRATE_CMD) up
 
 migrate-down:
-	@export DATABASE_URL="$(DATABASE_URL)" && $(MIGRATE_CMD) down 1
+	@DATABASE_URL="$(DATABASE_URL)" $(MIGRATE_CMD) down 1
 
 migrate-new:
 	@if [ -z "$(name)" ]; then echo "Usage: make migrate-new name=<migration_name>"; exit 1; fi

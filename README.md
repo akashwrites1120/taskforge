@@ -78,11 +78,30 @@ docker-compose up -d --build
 cd backend
 # Install dependencies
 go mod download
-# Run migrations
+# Run migrations (uses DATABASE_URL from .env.local if present)
 make migrate-up
 # Run the all-in-one dev mode (API + worker + reaper)
 go run ./cmd/taskforge start
 ```
+
+### Cloud Postgres (Neon) — no Docker needed
+
+The app runs against any Postgres. To use a free [Neon](https://neon.tech)
+database instead of the docker-compose one:
+
+1. Create a project at neon.tech and copy the connection string
+2. Put it in `.env.local` at the repo root (gitignored):
+   ```
+   DATABASE_URL=postgresql://user:pass@ep-xxx-pooler.region.aws.neon.tech/neondb?sslmode=require
+   ```
+3. Apply migrations: `make migrate-up`
+4. Run the backend: `go run ./cmd/taskforge start`
+
+`.env.local` is loaded automatically (real environment variables always win),
+which is also how production deployment works on Render/Vercel.
+
+> Note: DB-backed integration tests truncate tables between subtests — point
+> `TEST_DATABASE_URL` at a disposable database, never at your real data.
 
 #### Frontend
 ```bash
@@ -105,7 +124,6 @@ Configure the backend via environment variables:
 | `WORKER_CONCURRENCY` | Number of concurrent workers | `10` |
 | `POLL_INTERVAL` | Worker polling interval | `5s` |
 | `REAPER_INTERVAL` | Reaper scan interval | `15s` |
-| `VISIBILITY_TIMEOUT` | Job visibility timeout | `30s` |
 | `DEDUPE_WINDOW` | Idempotency key dedupe window | `24h` |
 
 Frontend configuration:
