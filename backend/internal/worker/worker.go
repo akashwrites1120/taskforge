@@ -295,6 +295,7 @@ func (wp *WorkerPool) markSucceeded(ctx context.Context, j *queue.Job, durationM
 	queryJob := `
 		UPDATE jobs
 		SET status = 'succeeded',
+		    attempt_count = $3,
 		    locked_by = NULL,
 		    locked_at = NULL,
 		    visibility_deadline = NULL,
@@ -302,7 +303,7 @@ func (wp *WorkerPool) markSucceeded(ctx context.Context, j *queue.Job, durationM
 		    updated_at = now()
 		WHERE id = $1 AND locked_by = $2 AND status = 'processing'
 	`
-	_, err = tx.Exec(ctx, queryJob, j.ID, wp.workerID)
+	_, err = tx.Exec(ctx, queryJob, j.ID, wp.workerID, j.AttemptCount+1)
 	if err != nil {
 		slog.Error("Failed to mark job succeeded in db", "job_id", j.ID, "error", err)
 		return
