@@ -1,5 +1,5 @@
 // Hand-written TypeScript types mirroring the Go backend response structs.
-// See backend/internal/api/handlers.go for the source of truth.
+// See backend/internal/api/types.go for the source of truth (snake_case JSON).
 
 export type JobStatus =
   | 'pending'
@@ -9,34 +9,34 @@ export type JobStatus =
   | 'dead_letter';
 
 export interface Job {
-  ID: string;
-  JobType: string;
-  Payload: unknown;
-  Status: JobStatus;
-  IdempotencyKey: string | null;
-  UniqueKey: string | null;
-  Priority: number;
-  RunAt: string;
-  MaxAttempts: number;
-  AttemptCount: number;
-  LockedBy: string | null;
-  LockedAt: string | null;
-  VisibilityDeadline: string | null;
-  Result: string | null;
-  CreatedAt: string;
-  UpdatedAt: string;
-  CompletedAt: string | null;
+  id: string;
+  job_type: string;
+  payload: unknown;
+  status: JobStatus;
+  idempotency_key?: string | null;
+  unique_key?: string | null;
+  priority: number;
+  run_at: string;
+  max_attempts: number;
+  attempt_count: number;
+  locked_by?: string | null;
+  locked_at?: string | null;
+  visibility_deadline?: string | null;
+  result?: unknown;
+  created_at: string;
+  updated_at: string;
+  completed_at?: string | null;
 }
 
 export interface JobAttempt {
-  ID: string;
-  JobID: string;
-  AttemptNumber: number;
-  Result: 'success' | 'error' | 'non_retryable' | 'reclaimed_by_reaper';
-  ErrorMessage: string | null;
-  StackTrace: string | null;
-  DurationMs: number;
-  CreatedAt: string;
+  id: number;
+  job_id: string;
+  attempt_number: number;
+  result: 'success' | 'error' | 'non_retryable' | 'reclaimed_by_reaper';
+  error_message?: string | null;
+  stack_trace?: string | null;
+  duration_ms: number;
+  created_at: string;
 }
 
 export interface JobListResponse {

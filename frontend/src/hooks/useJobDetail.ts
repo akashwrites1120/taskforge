@@ -8,7 +8,7 @@ export function useJobDetail(id: string) {
     queryKey: ['job', id],
     queryFn: () => apiClient.getJob(id),
     refetchInterval: (query) => {
-      const status = query.state.data?.job?.Status;
+      const status = query.state.data?.job?.status;
       if (!status || TERMINAL.has(status)) return false;
       return 3000;
     },
