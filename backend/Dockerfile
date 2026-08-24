@@ -15,8 +15,9 @@ RUN go mod download
 COPY . .
 
 # Build the binary
-# We keep CGO enabled because pgx driver uses cgo, but we rely on alpine's glibc in final stage
-RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/taskforge ./cmd/taskforge
+# pgx is pure Go, so cgo is not needed; CGO_ENABLED=0 produces a static
+# binary that runs on the plain alpine final stage with no C runtime
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/taskforge ./cmd/taskforge
 
 # Final stage
 FROM alpine:3.20
