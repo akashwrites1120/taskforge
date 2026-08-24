@@ -210,7 +210,7 @@ func registerDemoHandlers(wp *worker.WorkerPool) {
 			default:
 				time.Sleep(1 * time.Second)
 				slog.Info("export_data job executing step", "step", i)
-				
+
 				// Call Heartbeat to extend visibility timeout
 				if err := worker.Heartbeat(ctx); err != nil {
 					slog.Error("Heartbeat failed inside export_data", "error", err)
