@@ -23,24 +23,24 @@ function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Topbar */}
-      <header className="sticky top-0 z-40 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-stone-200/80 bg-white/85 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 animate-fade-in">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-zinc-950 shadow-[0_0_24px_rgba(16,185,129,0.25)]">
-              <Anvil size={17} strokeWidth={2.2} />
+            <div className="w-8 h-8 rounded-lg bg-stone-900 flex items-center justify-center text-white">
+              <Anvil size={16} strokeWidth={2.2} />
             </div>
             <div className="leading-tight">
-              <span className="block font-semibold text-zinc-100 text-sm tracking-tight">
+              <span className="block font-semibold text-stone-900 text-sm tracking-tight">
                 TaskForge
               </span>
-              <span className="block text-[11px] text-zinc-500 tracking-wide uppercase">
+              <span className="block text-[11px] text-stone-400 tracking-wide uppercase">
                 Operator Dashboard
               </span>
             </div>
           </div>
 
           {/* Nav */}
-          <nav className="hidden sm:flex items-center gap-1 rounded-full border border-zinc-800/80 bg-zinc-900/60 p-1">
+          <nav className="hidden sm:flex items-center gap-1 rounded-full border border-stone-200/90 bg-stone-100 p-1">
             {NAV.map(({ to, label, icon: Icon, end }) => (
               <NavLink
                 key={to}
@@ -49,8 +49,8 @@ function Layout({ children }: { children: React.ReactNode }) {
                 className={({ isActive }) =>
                   `relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm transition-all duration-200 ${
                     isActive
-                      ? 'bg-zinc-100 text-zinc-950 font-medium shadow-sm'
-                      : 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60'
+                      ? 'bg-stone-900 text-white font-medium shadow-sm'
+                      : 'text-stone-500 hover:text-stone-900'
                   }`
                 }
               >
@@ -65,15 +65,16 @@ function Layout({ children }: { children: React.ReactNode }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub repository"
-            className="text-zinc-600 hover:text-zinc-300 transition-colors duration-200"
+            className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-500 hover:border-stone-300 hover:text-stone-900 transition-all duration-200"
           >
-            <ExternalLink size={18} />
+            <ExternalLink size={13} />
+            GitHub
           </a>
         </div>
       </header>
 
       {/* Mobile nav */}
-      <div className="sm:hidden flex border-b border-zinc-800/80 bg-zinc-950 animate-fade-in">
+      <div className="sm:hidden flex border-b border-stone-200/80 bg-white animate-fade-in">
         {NAV.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
@@ -82,8 +83,8 @@ function Layout({ children }: { children: React.ReactNode }) {
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center gap-1 py-2.5 text-xs transition-colors duration-200 ${
                 isActive
-                  ? 'text-emerald-400'
-                  : 'text-zinc-600 hover:text-zinc-400'
+                  ? 'text-stone-900 font-medium'
+                  : 'text-stone-400 hover:text-stone-600'
               }`
             }
           >
@@ -98,8 +99,8 @@ function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="border-t border-zinc-800/60 py-4">
-        <p className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-xs text-zinc-600">
+      <footer className="border-t border-stone-200/70 py-4">
+        <p className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-xs text-stone-400">
           TaskForge — Postgres-backed job queue with dead-letter recovery
         </p>
       </footer>
@@ -109,7 +110,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 function PageTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="text-2xl font-semibold tracking-tight text-zinc-50 mb-6">{children}</h1>
+    <h1 className="text-2xl font-semibold tracking-tight text-stone-900 mb-6">{children}</h1>
   );
 }
 

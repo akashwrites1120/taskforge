@@ -73,21 +73,21 @@ export function JobFilters({ filters, onChange }: Props) {
   const chipCls = (active: boolean) =>
     `px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 ${
       active
-        ? 'bg-emerald-500 border-emerald-400 text-zinc-950'
-        : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+        ? 'bg-stone-900 border-stone-900 text-white shadow-sm'
+        : 'bg-white border-stone-200 text-stone-500 hover:border-stone-300 hover:text-stone-800'
     }`;
 
   return (
     <div className="space-y-3">
       {/* Search bar */}
       <div className="relative group">
-        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-emerald-400 transition-colors duration-200" />
+        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-emerald-600 transition-colors duration-200" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by ID or idempotency key…"
-          className="w-full pl-10 pr-4 py-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/15 transition-all duration-200"
+          className="w-full pl-10 pr-4 py-2.5 bg-white border border-stone-200 rounded-lg text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:border-emerald-600/50 focus:ring-2 focus:ring-emerald-600/10 transition-all duration-200"
         />
       </div>
 
@@ -98,7 +98,7 @@ export function JobFilters({ filters, onChange }: Props) {
             {s.replace('_', ' ')}
           </button>
         ))}
-        <span className="w-px h-4 bg-zinc-800 mx-1" />
+        <span className="w-px h-4 bg-stone-200 mx-1" />
         {JOB_TYPES.map((t) => (
           <button key={t} onClick={() => toggleType(t)} className={chipCls(filters.job_type.includes(t))}>
             {t}
@@ -107,7 +107,7 @@ export function JobFilters({ filters, onChange }: Props) {
         {hasFilters && (
           <button
             onClick={clear}
-            className="ml-auto flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-200 transition-colors duration-200 animate-fade-in"
+            className="ml-auto flex items-center gap-1 text-xs text-stone-400 hover:text-stone-700 transition-colors duration-200 animate-fade-in"
           >
             <X size={13} /> Clear
           </button>
@@ -116,7 +116,7 @@ export function JobFilters({ filters, onChange }: Props) {
 
       {/* Date range */}
       <div className="flex flex-wrap items-end gap-3">
-        <span className="flex items-center gap-1.5 text-xs text-zinc-600 pb-2">
+        <span className="flex items-center gap-1.5 text-xs text-stone-400 pb-2">
           <CalendarRange size={13} /> Range
         </span>
         {(
@@ -126,12 +126,12 @@ export function JobFilters({ filters, onChange }: Props) {
           ] as const
         ).map(([label, field]) => (
           <div key={field}>
-            <label className="text-[11px] uppercase tracking-wide text-zinc-600 block mb-1">{label}</label>
+            <label className="text-[11px] uppercase tracking-wide text-stone-400 block mb-1">{label}</label>
             <input
               type="datetime-local"
               value={filters[field]}
               onChange={(e) => onChange({ ...filters, [field]: e.target.value })}
-              className="bg-zinc-900/60 border border-zinc-800 rounded-lg text-xs text-zinc-300 px-3 py-2 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/15 transition-all duration-200 [color-scheme:dark]"
+              className="bg-white border border-stone-200 rounded-lg text-xs text-stone-600 px-3 py-2 focus:outline-none focus:border-emerald-600/50 focus:ring-2 focus:ring-emerald-600/10 transition-all duration-200"
             />
           </div>
         ))}

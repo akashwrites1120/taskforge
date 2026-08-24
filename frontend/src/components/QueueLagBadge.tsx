@@ -14,16 +14,16 @@ export function QueueLagBadge({ ageSeconds }: Props) {
 
   if (ageSeconds < 60) {
     label = ageSeconds === 0 ? 'No lag' : `${ageSeconds}s lag`;
-    cls = 'text-emerald-300 bg-emerald-500/10 border-emerald-500/30';
-    dot = 'bg-emerald-400';
+    cls = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+    dot = 'bg-emerald-500';
   } else if (minutes < 5) {
     label = `${minutes}m lag`;
-    cls = 'text-amber-300 bg-amber-500/10 border-amber-500/30';
-    dot = 'bg-amber-400';
+    cls = 'text-amber-700 bg-amber-50 border-amber-200';
+    dot = 'bg-amber-500';
   } else {
     label = `${minutes}m lag`;
-    cls = 'text-red-300 bg-red-500/10 border-red-500/30';
-    dot = 'bg-red-400';
+    cls = 'text-red-700 bg-red-50 border-red-200';
+    dot = 'bg-red-500';
   }
 
   return (

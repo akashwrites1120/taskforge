@@ -33,7 +33,7 @@ function CountdownTimer({ deadline }: { deadline: string }) {
   const remaining = Math.max(0, Math.floor((new Date(deadline).getTime() - now) / 1000));
 
   return (
-    <span className="font-mono text-amber-300 tabular-nums">
+    <span className="font-mono text-amber-600 tabular-nums">
       reclaims in {remaining}s
     </span>
   );
@@ -51,14 +51,14 @@ export function JobDetail() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64 text-zinc-500 gap-2.5 text-sm">
+      <div className="flex items-center justify-center h-64 text-stone-400 gap-2.5 text-sm">
         <RefreshCw size={16} className="animate-spin" /> Loading job…
       </div>
     );
   }
   if (isError || !data) {
     return (
-      <div className="flex items-center justify-center h-64 text-red-400 gap-2.5 text-sm animate-fade-in">
+      <div className="flex items-center justify-center h-64 text-red-600 gap-2.5 text-sm animate-fade-in">
         <TriangleAlert size={16} /> Job not found or backend unavailable
       </div>
     );
@@ -73,7 +73,7 @@ export function JobDetail() {
       {/* Back nav */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-emerald-400 transition-colors duration-200 group"
+        className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-900 transition-colors duration-200 group"
       >
         <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform duration-200" /> Back
       </button>
@@ -84,10 +84,10 @@ export function JobDetail() {
           <div className="space-y-2.5 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
               <StatusPill status={job.status} />
-              <h2 className="text-lg font-semibold tracking-tight text-zinc-100">{job.job_type}</h2>
+              <h2 className="text-lg font-semibold tracking-tight text-stone-900">{job.job_type}</h2>
             </div>
-            <div className="font-mono text-xs text-zinc-600">{job.id}</div>
-            <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-zinc-500 tabular-nums">
+            <div className="font-mono text-xs text-stone-400">{job.id}</div>
+            <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-stone-500 tabular-nums">
               <span>Created {fmt(job.created_at)}</span>
               <span>Updated {fmt(job.updated_at)}</span>
               {job.completed_at && <span>Completed {fmt(job.completed_at)}</span>}
@@ -102,21 +102,21 @@ export function JobDetail() {
             <div className="flex gap-2.5 flex-wrap animate-fade-in">
               <button
                 onClick={() => setEditingPayload(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-emerald-500 hover:bg-emerald-400 text-zinc-950 rounded-lg font-medium transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-all duration-200"
               >
                 <PenLine size={14} /> Edit & Requeue
               </button>
               <button
                 onClick={() => requeue.mutate(undefined)}
                 disabled={requeue.isPending}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
               >
                 <RefreshCw size={14} className={requeue.isPending ? 'animate-spin' : ''} />
                 Requeue
               </button>
               <button
                 onClick={() => setConfirmDiscard(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/25 rounded-lg font-medium transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-lg font-medium transition-all duration-200"
               >
                 <Trash2 size={14} /> Discard
               </button>
@@ -126,12 +126,12 @@ export function JobDetail() {
 
         {/* Lock info when processing */}
         {isProcessing && job.visibility_deadline && (
-          <div className="mt-5 flex items-center gap-2.5 text-xs bg-sky-500/10 border border-sky-500/20 rounded-lg px-4 py-2.5 animate-scale-in">
-            <Lock size={13} className="text-sky-400" />
-            <span className="text-sky-300">
+          <div className="mt-5 flex items-center gap-2.5 text-xs bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 animate-scale-in">
+            <Lock size={13} className="text-blue-500" />
+            <span className="text-blue-700">
               Locked by <span className="font-mono">{job.locked_by}</span>
             </span>
-            <span className="text-zinc-700">·</span>
+            <span className="text-blue-300">·</span>
             <CountdownTimer deadline={job.visibility_deadline} />
           </div>
         )}
@@ -143,8 +143,8 @@ export function JobDetail() {
           className="card p-5 animate-fade-up self-start"
           style={{ animationDelay: '60ms' }}
         >
-          <h3 className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-3.5">
-            <Braces size={14} className="text-zinc-500" />
+          <h3 className="flex items-center gap-2 text-sm font-medium text-stone-700 mb-3.5">
+            <Braces size={14} className="text-stone-400" />
             Payload
           </h3>
           {editingPayload ? (
@@ -159,7 +159,7 @@ export function JobDetail() {
               }}
             />
           ) : (
-            <pre className="text-xs font-mono leading-relaxed text-zinc-300 bg-zinc-950 rounded-lg px-4 py-3.5 overflow-x-auto whitespace-pre-wrap break-words border border-zinc-800/80">
+            <pre className="text-xs font-mono leading-relaxed text-stone-600 bg-stone-50 rounded-lg px-4 py-3.5 overflow-x-auto whitespace-pre-wrap break-words border border-stone-200/90">
               {JSON.stringify(job.payload, null, 2)}
             </pre>
           )}
@@ -170,10 +170,10 @@ export function JobDetail() {
           className="card p-5 animate-fade-up"
           style={{ animationDelay: '120ms' }}
         >
-          <h3 className="flex items-center gap-2 text-sm font-medium text-zinc-300 mb-4">
-            <History size={14} className="text-zinc-500" />
+          <h3 className="flex items-center gap-2 text-sm font-medium text-stone-700 mb-4">
+            <History size={14} className="text-stone-400" />
             Attempt History
-            <span className="text-zinc-600 font-normal tabular-nums">({attempts.length})</span>
+            <span className="text-stone-400 font-normal tabular-nums">({attempts.length})</span>
           </h3>
           <AttemptTimeline attempts={attempts} />
         </div>
@@ -181,7 +181,7 @@ export function JobDetail() {
 
       {/* Error/success feedback */}
       {(requeue.isError || discard.isError) && (
-        <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/25 rounded-lg px-4 py-3 animate-fade-in space-y-1">
+        <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3 animate-fade-in space-y-1">
           {requeue.isError && (
             <p>Requeue failed: {(requeue.error as Error).message}</p>
           )}

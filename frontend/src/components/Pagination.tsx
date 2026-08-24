@@ -12,10 +12,10 @@ export function Pagination({ total, limit, offset, onChange }: Props) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   const btn =
-    'p-1.5 rounded-md border border-zinc-800 text-zinc-400 hover:text-zinc-100 hover:border-zinc-600 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-zinc-800 transition-all duration-200';
+    'p-1.5 rounded-md border border-stone-200 bg-white text-stone-500 hover:text-stone-900 hover:border-stone-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-stone-200 disabled:hover:text-stone-500 transition-all duration-200';
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 text-sm text-zinc-500 border-t border-zinc-800/80">
+    <div className="flex items-center justify-between px-4 py-3 text-sm text-stone-500 border-t border-stone-200/90">
       <span>
         {total === 0
           ? 'No results'
@@ -25,7 +25,7 @@ export function Pagination({ total, limit, offset, onChange }: Props) {
         <button onClick={() => onChange(Math.max(0, offset - limit))} disabled={offset === 0} className={btn} aria-label="Previous page">
           <ChevronLeft size={15} />
         </button>
-        <span className="px-1.5 font-mono text-xs text-zinc-400 tabular-nums">
+        <span className="px-1.5 font-mono text-xs text-stone-500 tabular-nums">
           {page} / {totalPages}
         </span>
         <button

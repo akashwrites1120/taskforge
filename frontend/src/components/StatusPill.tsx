@@ -2,11 +2,11 @@ import clsx from 'clsx';
 import type { JobStatus } from '../types';
 
 const CONFIG: Record<JobStatus, { label: string; dot: string; cls: string }> = {
-  pending:     { label: 'Pending',     dot: 'bg-zinc-400',   cls: 'text-zinc-300 border-zinc-700/60 bg-zinc-500/10' },
-  processing:  { label: 'Processing',  dot: 'bg-sky-400',    cls: 'text-sky-300 border-sky-500/30 bg-sky-500/10' },
-  retrying:    { label: 'Retrying',    dot: 'bg-amber-400',  cls: 'text-amber-300 border-amber-500/30 bg-amber-500/10' },
-  succeeded:   { label: 'Succeeded',   dot: 'bg-emerald-400', cls: 'text-emerald-300 border-emerald-500/30 bg-emerald-500/10' },
-  dead_letter: { label: 'Dead Letter', dot: 'bg-red-400',    cls: 'text-red-300 border-red-500/30 bg-red-500/10' },
+  pending:     { label: 'Pending',     dot: 'bg-stone-400',   cls: 'text-stone-600 border-stone-200 bg-stone-50' },
+  processing:  { label: 'Processing',  dot: 'bg-blue-500',    cls: 'text-blue-700 border-blue-200 bg-blue-50' },
+  retrying:    { label: 'Retrying',    dot: 'bg-amber-500',   cls: 'text-amber-700 border-amber-200 bg-amber-50' },
+  succeeded:   { label: 'Succeeded',   dot: 'bg-emerald-500', cls: 'text-emerald-700 border-emerald-200 bg-emerald-50' },
+  dead_letter: { label: 'Dead Letter', dot: 'bg-red-500',     cls: 'text-red-700 border-red-200 bg-red-50' },
 };
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function StatusPill({ status, className }: Props) {
-  const cfg = CONFIG[status] ?? { label: status, dot: 'bg-zinc-500', cls: 'text-zinc-400 border-zinc-600/40 bg-zinc-600/10' };
+  const cfg = CONFIG[status] ?? { label: status, dot: 'bg-stone-400', cls: 'text-stone-500 border-stone-200 bg-stone-50' };
   const isLive = status === 'processing' || status === 'retrying';
   return (
     <span
