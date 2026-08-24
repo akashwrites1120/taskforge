@@ -92,10 +92,17 @@ database instead of the docker-compose one:
 1. Create a project at neon.tech and copy the connection string
 2. Put it in `.env.local` at the repo root (gitignored):
    ```
-   DATABASE_URL=postgresql://user:pass@ep-xxx-pooler.region.aws.neon.tech/neondb?sslmode=require
+   DATABASE_URL=postgresql://user:pass@ep-xxx.region.aws.neon.tech/neondb?sslmode=require
    ```
 3. Apply migrations: `make migrate-up`
 4. Run the backend: `go run ./cmd/taskforge start`
+
+**Which Neon string to use?** Neon exposes two hostnames for every database:
+
+| Client | String |
+|--------|--------|
+| Long-running servers (this backend on Render, your local `go run`) | **Direct** (host without `-pooler`) — the app pools connections itself via `pgxpool`, and pgx's prepared-statement cache misbehaves behind transaction-mode proxies |
+| Serverless functions / many short-lived clients | Pooled (host contains `-pooler`) |
 
 `.env.local` is loaded automatically (real environment variables always win),
 which is also how production deployment works on Render/Vercel.
