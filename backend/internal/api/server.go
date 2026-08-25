@@ -33,6 +33,7 @@ func NewServer(port string, store *store.Store, q *queue.Queue) *Server {
 	r.Use(corsMiddleware)
 
 	// endpoints
+	r.Get("/", api.Root)
 	r.Post("/jobs", api.EnqueueJob)
 	r.Get("/jobs", api.ListJobs)
 	r.Get("/jobs/{id}", api.GetJob)

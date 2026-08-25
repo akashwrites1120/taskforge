@@ -429,6 +429,16 @@ func (a *API) GetStats(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// Root returns basic service info so GET / doesn't 404.
+func (a *API) Root(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"service":   "taskforge",
+		"status":    "ok",
+		"endpoints": []string{"/jobs", "/jobs/{id}", "/stats", "/healthz", "/readyz", "/metrics"},
+	})
+}
+
 // Healthz returns 200 OK to indicate the app is alive.
 func (a *API) Healthz(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
