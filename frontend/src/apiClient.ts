@@ -8,7 +8,7 @@ import type {
   EnqueueResponse,
 } from './types';
 
-const BASE_URL = import.meta.env.API_BASE_URL ?? 'http://localhost:8080';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
