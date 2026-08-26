@@ -1,32 +1,53 @@
-# React + TypeScript + Vite
+# TaskForge Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Operator dashboard for the TaskForge job queue — built with React 19,
+TypeScript, Vite, Tailwind CSS v4, TanStack Query, Recharts, and
+lucide-react icons.
 
-Currently, two official plugins are available:
+## Views
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Route | View | Purpose |
+|---|---|---|
+| `/` | Queue Overview | Status counts, throughput chart, queue lag |
+| `/enqueue` | Enqueue | Create jobs from presets or custom payloads; seed sample jobs |
+| `/jobs` | Job List | Filterable, paginated table of all jobs |
+| `/jobs/:id` | Job Detail | Payload, attempt timeline, requeue/discard actions |
+| `/dead-letter` | Dead Letter | Dead-lettered jobs with bulk requeue/discard |
 
-## React Compiler
+## Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run test       # Vitest + React Testing Library
+npm run build      # type-check + production build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Configuration
+
+The API base URL is read at build time (Vite inlines it into the bundle):
+
+```
+VITE_API_BASE_URL=https://your-backend-host
+```
+
+- Unset in dev → defaults to `http://localhost:8080`
+- In production (Vercel), set it as a **Config**-type environment variable
+  and redeploy
+
+Only `VITE_`-prefixed variables are exposed to the browser — never put
+secrets in them.
+
+## Structure
+
+```
+src/
+├── apiClient.ts       # typed fetch wrapper for the backend API
+├── types.ts           # hand-written types mirroring the Go response structs
+├── components/        # views + reusable UI (EnqueueJob, JobList, JobDetail, …)
+├── hooks/             # TanStack Query hooks (useStats, useJobs, mutations)
+└── test/              # Vitest component tests
+```
+
+Live deployment: the backend runs on Render, this dashboard on Vercel —
+see the root [README](../README.md#deployment) for details.

@@ -84,6 +84,8 @@
   success/failure rates, per job type.
 - FR-32: `GET /healthz`, `GET /readyz` for liveness/readiness probes.
 - FR-33: `GET /metrics` — Prometheus-format metrics endpoint.
+- FR-39: `GET /` — service info banner (name, status, endpoint list) so
+  browsers hitting the API root get a helpful response instead of a 404.
 
 ### 1.8 Dashboard
 - FR-34: Live queue overview: counts by status, throughput chart, oldest
@@ -95,6 +97,12 @@
 - FR-37: Dead-letter view with bulk-select requeue/discard actions.
 - FR-38: Auto-refresh via polling (configurable interval, default 5s);
   manual refresh control.
+- FR-40: Enqueue view with job-type presets that prefill editable sample
+  payloads, an optional custom job type, and advanced options (priority,
+  max attempts, delay, idempotency key, unique key).
+- FR-41: One-click sample seeding that enqueues a realistic job mix
+  (including jobs destined for the dead-letter queue) so the dashboard can
+  be demonstrated without external tooling.
 
 ## 2. Non-Functional Requirements
 

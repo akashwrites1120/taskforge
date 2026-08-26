@@ -133,13 +133,57 @@ Configure the backend via environment variables:
 | `REAPER_INTERVAL` | Reaper scan interval | `15s` |
 | `DEDUPE_WINDOW` | Idempotency key dedupe window | `24h` |
 
-Frontend configuration:
-- `API_BASE_URL`: Base URL for API requests (defaults to `http://localhost:8080` in dev)
+Frontend configuration (Vite — only `VITE_`-prefixed vars are exposed to the browser):
+- `VITE_API_BASE_URL`: Base URL for API requests (defaults to `http://localhost:8080` in dev).
+  Set it at build time, e.g. `VITE_API_BASE_URL=https://your-backend.onrender.com` in Vercel's
+  project environment variables, then redeploy — Vite inlines the value during the build.
+
+## Using the Dashboard
+
+The dashboard ships with three demo job types registered by the worker
+(see `backend/cmd/taskforge/main.go`):
+
+| Job type | Behavior |
+|----------|----------|
+| `send_email` | ~0.8s; randomly fails 15% (transient → retry) and 5% (non-retryable → dead letter) |
+| `process_payment` | ~0.5s; always succeeds |
+| `export_data` | ~5s long-running job demonstrating heartbeats and visibility-timeout extension |
+
+To see the pipeline in action, open the **Enqueue** page:
+
+- **Job presets** — pick a job type and its sample payload is prefilled
+  (editable as JSON), or choose *Custom type* for any registered handler.
+- **Options** — priority, max attempts, delay (`run_at`), idempotency key,
+  unique key.
+- **Seed 8 sample jobs** — one click enqueues a realistic mix, including two
+  jobs destined for the dead-letter queue, so Overview, Jobs, and Dead Letter
+  all have data immediately.
+
+You can also enqueue programmatically:
+
+```bash
+curl -X POST http://localhost:8080/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"job_type":"send_email","payload":{"to":"user@example.com"},"priority":5,"max_attempts":3}'
+```
+
+## Deployment
+
+The production deployment is split across two free-tier hosts:
+
+| Piece | Host | Notes |
+|-------|------|-------|
+| Backend (Docker) | [Render](https://render.com) | Builds `backend/Dockerfile` and runs `taskforge start` (API + worker + reaper in one process); needs `DATABASE_URL` (direct Neon host) |
+| Frontend (static) | [Vercel](https://vercel.com) | Built from `frontend/`; needs `VITE_API_BASE_URL` pointing at the Render URL (type: **Config**) |
+| Database | [Neon](https://neon.tech) | Free Postgres; apply migrations with `make migrate-up` |
+
+Both services deploy automatically on push to `master`.
 
 ## API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| `GET` | `/` | Service info (endpoint list) |
 | `POST` | `/jobs` | Enqueue a new job |
 | `GET` | `/jobs` | List/filter jobs (pagination) |
 | `GET` | `/jobs/{id}` | Get job details + attempt history |

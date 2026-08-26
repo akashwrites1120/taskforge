@@ -13,6 +13,7 @@ need in two clicks.
 | Route | View | Purpose |
 |---|---|---|
 | `/` | Queue Overview | Status counts, throughput chart, queue lag, per-job-type breakdown |
+| `/enqueue` | Enqueue | Create jobs from presets or hand-written payloads; one-click sample seeding |
 | `/jobs` | Job List | Filterable/paginated table of all jobs |
 | `/jobs/:id` | Job Detail | Payload, full attempt timeline, current lock state, actions |
 | `/dead-letter` | Dead-Letter View | Focused list of `dead_letter` jobs with bulk actions |
@@ -25,6 +26,7 @@ need in two clicks.
   StatusCards.tsx         # pending/processing/retrying/succeeded/dead_letter counts
   ThroughputChart.tsx     # Recharts line chart, jobs/min succeeded vs failed
   QueueLagBadge.tsx       # "oldest pending job age" indicator, color-coded by threshold
+  EnqueueJob.tsx          # job creation form: presets w/ sample payloads, options, seed batch
   JobList.tsx             # table: id, type, status, attempts, run_at, updated_at
   JobFilters.tsx          # status/type/date-range/search controls, synced to URL query params
   JobDetail.tsx           # payload viewer, AttemptTimeline, action buttons
@@ -71,7 +73,25 @@ are ever needed.
   spot "the email job type is the one stuck" instead of only a global
   number.
 
-## 6. Job List — Behavior
+## 6. Enqueue — Behavior
+
+- Job-type presets (`send_email`, `process_payment`, `export_data`) shown as
+  selectable cards; selecting one prefills the payload editor with a realistic
+  sample JSON that stays fully editable. A *Custom type* card accepts any
+  registered handler name with a hand-written payload.
+- Options panel: priority, max attempts, delay in seconds (converted to a
+  RFC3339 `run_at`), idempotency key, unique key — all optional.
+- Payload is validated as JSON client-side before submit; server errors
+  (409 dedupe conflicts, etc.) are surfaced inline.
+- Success shows the job ID (shortened) with a link straight to
+  `/jobs/:id`; deduped responses are labeled as duplicates.
+- "Seed 8 sample jobs" enqueues a fixed realistic mix (including two
+  `max_attempts: 1` jobs destined for the DLQ) with a small stagger, then
+  invalidates the jobs/stats queries so the Overview updates live.
+- The Overview page shows an informative empty state linking to `/enqueue`
+  while the queue has zero jobs in every status.
+
+## 7. Job List — Behavior
 
 - Server-side pagination (cursor or offset, matches API) — never fetch
   the whole table client-side.
@@ -82,7 +102,7 @@ are ever needed.
 - Attempts column shows `current/max` (e.g., `2/5`) as a quick health
   signal without opening detail.
 
-## 7. Job Detail — Behavior
+## 8. Job Detail — Behavior
 
 - Header: status pill, job type, created/updated timestamps, current
   `locked_by`/`visibility_deadline` if in flight.
@@ -102,7 +122,7 @@ are ever needed.
   - `processing` → read-only; shows live countdown to
     `visibility_deadline`.
 
-## 8. Dead-Letter View — Behavior
+## 9. Dead-Letter View — Behavior
 
 - Dedicated table, default-sorted by most recently dead-lettered.
 - Checkbox column + "select all on page."
@@ -113,7 +133,7 @@ are ever needed.
   "all failing with the same downstream 500") is visible without opening
   every job.
 
-## 9. Visual / UX Principles
+## 10. Visual / UX Principles
 
 - Status color convention is consistent everywhere: gray `pending`, blue
   `processing`, amber `retrying`, green `succeeded`, red `dead_letter`.
@@ -124,17 +144,18 @@ are ever needed.
 - Numbers over decoration: this is an operator tool, not a marketing page —
   density and scanability win over whitespace.
 
-## 10. API Contract Assumptions
+## 11. API Contract Assumptions
 
 Frontend types are hand-written/generated from the Go API's response
 structs to keep the two in sync; a mismatch should fail at build time via
 TypeScript rather than at runtime in the browser. See `backend/internal/api`
 for the source of truth and `requirements.md` §1.7 for the endpoint list.
 
-## 11. Testing
+## 12. Testing
 
 - Component tests (Vitest + React Testing Library) for `StatusPill`,
   `JobFilters` URL-sync logic, `AttemptTimeline` rendering, and
   `PayloadEditor` validation.
 - A mocked API layer (MSW) for hook tests (`useJobs`, `useRequeueJob`)
   so tests don't require a live backend.
+
