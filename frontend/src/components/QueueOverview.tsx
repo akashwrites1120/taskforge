@@ -8,6 +8,7 @@ import {
   CircleX,
   TriangleAlert,
   ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -50,8 +51,26 @@ export function QueueOverview() {
     { name: 'Now', succeeded: data.throughput_succeeded, failed: data.throughput_failed },
   ];
 
+  const isEmpty = Object.values(data.status_counts).every((c) => !c);
+
   return (
     <div className="space-y-6">
+      {isEmpty && (
+        <Link
+          to="/enqueue"
+          className="card p-4 flex items-center gap-3 group border-dashed border-stone-300 hover:border-stone-400 transition-all duration-200 animate-fade-in"
+        >
+          <span className="w-8 h-8 rounded-lg bg-stone-900 flex items-center justify-center text-white shrink-0">
+            <Sparkles size={15} />
+          </span>
+          <span className="flex-1 text-sm text-stone-500">
+            The queue is empty — <span className="font-medium text-stone-800">enqueue a job</span> or seed sample jobs to
+            see the pipeline in action.
+          </span>
+          <ArrowRight size={15} className="text-stone-400 group-hover:translate-x-0.5 transition-transform duration-200" />
+        </Link>
+      )}
+
       {/* Status Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {CARDS.map(({ key, label, icon: Icon, accent }, i) => {

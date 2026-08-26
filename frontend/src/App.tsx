@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import { LayoutDashboard, List, XCircle, Anvil } from 'lucide-react';
+import { LayoutDashboard, List, XCircle, Anvil, SquarePlus } from 'lucide-react';
 
 import { QueueOverview } from './components/QueueOverview';
 import { JobList } from './components/JobList';
 import { JobDetail } from './components/JobDetail';
 import { DeadLetterTable } from './components/DeadLetterTable';
+import { EnqueueJob } from './components/EnqueueJob';
 
 const GITHUB_URL = 'https://github.com/akashwrites1120/taskforge';
 
@@ -25,6 +26,7 @@ const qc = new QueryClient({
 
 const NAV = [
   { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
+  { to: '/enqueue', label: 'Enqueue', icon: SquarePlus, end: false },
   { to: '/jobs', label: 'Jobs', icon: List, end: false },
   { to: '/dead-letter', label: 'Dead Letter', icon: XCircle, end: false },
 ];
@@ -135,6 +137,15 @@ export default function App() {
               <Layout>
                 <PageTitle>Queue Overview</PageTitle>
                 <QueueOverview />
+              </Layout>
+            }
+          />
+          <Route
+            path="/enqueue"
+            element={
+              <Layout>
+                <PageTitle>Enqueue Job</PageTitle>
+                <EnqueueJob />
               </Layout>
             }
           />
